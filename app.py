@@ -130,24 +130,28 @@ if app_mode == "👕 T-Shirt Title Generator":
 
                 return sanitized
 
-            results = []
-            with st.spinner("🧐 Generating creative product titles with GPT-4 Vision..."):
-                for file in uploaded_files:
-                    img = Image.open(file).convert("RGB")
-                    try:
-                        img_b64 = encode_image(img, shirt_color)  # Pass shirt_color here
-                        title = generate_title_with_gpt(img_b64, shirt_gender, shirt_color, shirt_type)
-                        full_title = f"{shirt_gender}'s {descriptor_word} - {shirt_color} {shirt_type}: \"{title}\""
-                        if custom_keyword:
-                            full_title += f" - {custom_keyword}"
+st.info("🧐 Generating creative product titles one by one...")
 
-                        sanitized_title = sanitize_title(full_title)
-                        results.append(sanitized_title)
-                    except Exception as e:
-                        results.append(f"ERROR: {e}")
+results = []
 
-            st.success("✅ All titles generated!")
-            st.text_area("📝 Generated T-Shirt Titles", "\n".join(results), height=300)
+for idx, file in enumerate(uploaded_files, 1):
+    st.markdown(f"**Processing Image {idx}/{len(uploaded_files)}: `{file.name}`**")
+    try:
+        img = Image.open(file).convert("RGB")
+        img_b64 = encode_image(img, shirt_color)
+        title = generate_title_with_gpt(img_b64, shirt_gender, shirt_color, shirt_type)
+        full_title = f"{shirt_gender}'s {descriptor_word} - {shirt_color} {shirt_type}: \"{title}\""
+        if custom_keyword:
+            full_title += f" - {custom_keyword}"
 
-        else:
-            st.warning("Please upload at least one image to generate titles.")
+        sanitized_title = sanitize_title(full_title)
+        results.append(sanitized_title)
+        st.success(sanitized_title)
+
+    except Exception as e:
+        error_msg = f"ERROR: {e}"
+        results.append(error_msg)
+        st.error(error_msg)
+
+st.markdown("---")
+st.text_area("📝 Final List of All Titles", "\n".join(results), height=300)
