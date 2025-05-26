@@ -133,6 +133,7 @@ if app_mode == "👕 T-Shirt Title Generator":
 st.info("🧐 Generating creative product titles one by one...")
 
 results = []
+text_box = st.empty()  # Placeholder for the growing text area
 
 for idx, file in enumerate(uploaded_files, 1):
     st.markdown(f"**Processing Image {idx}/{len(uploaded_files)}: `{file.name}`**")
@@ -146,12 +147,9 @@ for idx, file in enumerate(uploaded_files, 1):
 
         sanitized_title = sanitize_title(full_title)
         results.append(sanitized_title)
-        st.success(sanitized_title)
 
     except Exception as e:
-        error_msg = f"ERROR: {e}"
-        results.append(error_msg)
-        st.error(error_msg)
+        results.append(f"ERROR: {e}")
 
-st.markdown("---")
-st.text_area("📝 Final List of All Titles", "\n".join(results), height=300)
+    # Update the text box after each result
+    text_box.text_area("📝 Generated T-Shirt Titles", "\n".join(results), height=300)
